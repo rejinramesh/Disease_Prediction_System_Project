@@ -55,7 +55,7 @@ local_css("style.css")
 heart_model = pickle.load(open("models/random_forest_Heart_Disease_model.pkl", "rb"))
 diabetes_model = pickle.load(open("models/randomforestmodel_diabetes.pkl", "rb"))
 cancer_model = pickle.load(
-    open("models/logistic_regression_breast_cancer_model.pkl", "rb")
+    open("models/logistic_regression_Breast_Cancer_model.pkl", "rb")
 )
 
 st.title("Disease Prediction System")
