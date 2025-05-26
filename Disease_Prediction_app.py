@@ -23,6 +23,22 @@ set_background_from_url(
     "https://i.ibb.co/5XQF0TsX/4dac5deae87b71af4498187b28842170.jpg"
 )
 
+st.markdown(
+    """
+    <style>
+    /* Make title and all input labels and headers black */
+    h1, h2, h3, label,
+    .stTextInput > label,
+    .stNumberInput > label,
+    .stSelectbox > label {
+        color: black !important;
+        font-weight: 600;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 
 # Optional: Apply additional CSS styling from file
 def local_css(file_name):
@@ -56,7 +72,7 @@ def to_float(values):
 
 # --- Heart Disease Form ---
 if disease == "Heart Disease":
-    st.subheader("Heart Disease Inputs (XGBoost Selected Features)")
+    st.subheader("Heart Disease Inputs")
 
     cp = st.selectbox(
         "Chest Pain Type",
@@ -114,11 +130,16 @@ if disease == "Heart Disease":
             ]
         )
         prediction = heart_model.predict([features])[0]
-        st.success(
-            "Positive for Heart Disease"
-            if prediction == 1
-            else "Negative for Heart Disease"
-        )
+        if prediction == 1:
+            st.markdown(
+                "<h4 style='color: darkred; font-weight: bold;'>Positive for Heart Disease</h4>",
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                "<h4 style='color: darkgreen; font-weight: bold;'>Negative for Heart Disease</h4>",
+                unsafe_allow_html=True,
+            )
 
 # --- Diabetes Form ---
 elif disease == "Diabetes":
@@ -165,13 +186,20 @@ elif disease == "Diabetes":
             ]
         )
         prediction = diabetes_model.predict([features])[0]
-        st.success(
-            "Positive for Diabetes" if prediction == 1 else "Negative for Diabetes"
-        )
+        if prediction == 1:
+            st.markdown(
+                "<h4 style='color: darkred; font-weight: bold;'>Positive for Diabetes</h4>",
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                "<h4 style='color: darkgreen; font-weight: bold;'>Negative for Diabetes</h4>",
+                unsafe_allow_html=True,
+            )
 
 # --- Breast Cancer Form ---
 elif disease == "Breast Cancer":
-    st.subheader("Breast Cancer Inputs (Top 10 XGBoost Features)")
+    st.subheader("Breast Cancer Inputs")
 
     radius3 = st.number_input(
         "radius3 (Worst Radius) [7.0–30.0]", min_value=7.0, max_value=30.0, step=0.1
@@ -235,12 +263,30 @@ elif disease == "Breast Cancer":
             ]
         )
         prediction = cancer_model.predict([features])[0]
-        st.success(
-            "Malignant (Breast Cancer)" if prediction == 1 else "Benign (No Cancer)"
-        )
+        if prediction == 1:
+            st.markdown(
+                "<h4 style='color: darkred; font-weight: bold;'>Malignant (Breast Cancer)</h4>",
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                "<h4 style='color: darkgreen; font-weight: bold;'>Benign (No Cancer)</h4>",
+                unsafe_allow_html=True,
+            )
 
 # --- Disclaimer ---
-st.warning(
-    "This prediction is based on statistical models and may not be 100% accurate. "
-    "Please consult a medical professional for a proper diagnosis and treatment."
+st.markdown(
+    """
+    <div style="
+        background-color: #FFE6CC;
+        color: black;
+        padding: 15px;
+        border-left: 6px solid #FF8C00;
+        border-radius: 5px;
+        font-size: 16px;">
+         This prediction is based on statistical models and may not be 100% accurate. 
+        Please consult a medical professional for a proper diagnosis and treatment.
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
