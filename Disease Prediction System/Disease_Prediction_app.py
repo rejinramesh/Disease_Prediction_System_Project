@@ -56,67 +56,61 @@ def to_float(values):
 
 # --- Heart Disease Form ---
 if disease == "Heart Disease":
-    st.subheader("Heart Disease Inputs")
-    age = st.number_input("Age (in years) [0–120]", min_value=0, max_value=120)
-    sex = st.selectbox("Sex (Male or Female)", ["Male", "Female"])
+    st.subheader("Heart Disease Inputs (XGBoost Selected Features)")
+
     cp = st.selectbox(
-        "Chest Pain Type: Typical, Atypical, Non-anginal, Asymptomatic",
+        "Chest Pain Type",
         ["Typical Angina", "Atypical Angina", "Non-anginal Pain", "Asymptomatic"],
     )
-    trestbps = st.number_input(
-        "Resting Blood Pressure (mm Hg) [90–200]", min_value=90, max_value=200
+    ca = st.number_input(
+        "Number of Major Vessels Colored by Fluoroscopy (ca) [0–3]",
+        min_value=0,
+        max_value=3,
     )
-    chol = st.number_input(
-        "Serum Cholesterol (mg/dL) [100–600]", min_value=100, max_value=600
+    thal = st.selectbox(
+        "Thalassemia Type", ["Normal", "Fixed Defect", "Reversible Defect"]
     )
-    fbs = st.selectbox("Fasting Blood Sugar > 120 mg/dL? (Yes/No)", ["Yes", "No"])
-    restecg = st.selectbox(
-        "Resting ECG Results: Normal, ST-T Abnormality, LVH",
-        ["Normal", "ST-T Abnormality", "LVH"],
-    )
-    thalach = st.number_input(
-        "Max Heart Rate Achieved (bpm) [60–220]", min_value=60, max_value=220
-    )
-    exang = st.selectbox("Exercise-Induced Angina (Yes/No)", ["Yes", "No"])
+    slope = st.selectbox("Slope of ST Segment", ["Upsloping", "Flat", "Downsloping"])
+    exang = st.selectbox("Exercise-Induced Angina", ["No", "Yes"])
+    sex = st.selectbox("Sex", ["Female", "Male"])
     oldpeak = st.number_input(
-        "ST Depression Relative to Rest [0.0–6.0]",
+        "ST Depression Induced by Exercise (oldpeak) [0.0–6.0]",
         min_value=0.0,
         max_value=6.0,
         step=0.1,
     )
-    slope = st.selectbox(
-        "Slope of ST Segment: Upsloping, Flat, Downsloping",
-        ["Upsloping", "Flat", "Downsloping"],
+    restecg = st.selectbox(
+        "Resting ECG Results",
+        ["Normal", "ST-T Abnormality", "Left Ventricular Hypertrophy (LVH)"],
     )
-    ca = st.number_input(
-        "Major Vessels Colored by Fluoroscopy [0–3]", min_value=0, max_value=3
-    )
-    thal = st.selectbox(
-        "Thalassemia Type: Normal, Fixed Defect, Reversible Defect",
-        ["Normal", "Fixed Defect", "Reversible Defect"],
+    age = st.number_input("Age (in years) [0–120]", min_value=0, max_value=120)
+    thalach = st.number_input(
+        "Maximum Heart Rate Achieved (thalach) [60–220]", min_value=60, max_value=220
     )
 
     if st.button("Predict"):
         features = to_float(
             [
-                age,
-                1 if sex == "Male" else 0,
                 [
                     "Typical Angina",
                     "Atypical Angina",
                     "Non-anginal Pain",
                     "Asymptomatic",
                 ].index(cp),
-                trestbps,
-                chol,
-                1 if fbs == "Yes" else 0,
-                ["Normal", "ST-T Abnormality", "LVH"].index(restecg),
-                thalach,
-                1 if exang == "Yes" else 0,
-                oldpeak,
-                ["Upsloping", "Flat", "Downsloping"].index(slope),
                 ca,
-                ["Normal", "Fixed Defect", "Reversible Defect"].index(thal) + 3,
+                ["Normal", "Fixed Defect", "Reversible Defect"].index(thal)
+                + 3,  # thal encoded as 3, 6, 7 in common datasets
+                ["Upsloping", "Flat", "Downsloping"].index(slope),
+                1 if exang == "Yes" else 0,
+                1 if sex == "Male" else 0,
+                oldpeak,
+                [
+                    "Normal",
+                    "ST-T Abnormality",
+                    "Left Ventricular Hypertrophy (LVH)",
+                ].index(restecg),
+                age,
+                thalach,
             ]
         )
         prediction = heart_model.predict([features])[0]
@@ -177,83 +171,72 @@ elif disease == "Diabetes":
 
 # --- Breast Cancer Form ---
 elif disease == "Breast Cancer":
-    st.subheader("Breast Cancer Inputs")
-    radius = st.number_input(
-        "Radius Mean (Size of Tumor) [6.0–30.0]",
-        min_value=6.0,
-        max_value=30.0,
-        step=0.1,
+    st.subheader("Breast Cancer Inputs (Top 10 XGBoost Features)")
+
+    radius3 = st.number_input(
+        "radius3 (Worst Radius) [7.0–30.0]", min_value=7.0, max_value=30.0, step=0.1
     )
-    texture = st.number_input(
-        "Texture Mean (Gray Intensity Variation) [10.0–40.0]",
-        min_value=10.0,
-        max_value=40.0,
-        step=0.1,
-    )
-    perimeter = st.number_input(
-        "Perimeter Mean (Tumor Boundary) [50.0–200.0]",
+    perimeter3 = st.number_input(
+        "perimeter3 (Worst Perimeter) [50.0–200.0]",
         min_value=50.0,
         max_value=200.0,
         step=0.1,
     )
-    area = st.number_input(
-        "Area Mean (Tumor Surface Area) [100–2500]",
-        min_value=100.0,
-        max_value=2500.0,
-        step=1.0,
-    )
-    compactness = st.number_input(
-        "Compactness Mean (Perimeter² / Area) [0.01–0.35]",
+    concave_points3 = st.number_input(
+        "concave_points3 (Worst Concave Points) [0.01–0.30]",
         min_value=0.01,
-        max_value=0.35,
-        step=0.01,
+        max_value=0.30,
+        step=0.001,
     )
-    concavity = st.number_input(
-        "Concavity Mean (Edge Inward Curves) [0.01–0.50]",
+    concave_points1 = st.number_input(
+        "concave_points1 (Mean Concave Points) [0.01–0.20]",
         min_value=0.01,
-        max_value=0.50,
-        step=0.01,
-    )
-    concave_points = st.number_input(
-        "Concave Points Mean (Edge Irregularities) [0.001–0.20]",
-        min_value=0.001,
         max_value=0.20,
         step=0.001,
     )
-    symmetry = st.number_input(
-        "Symmetry Mean (Tumor Symmetry) [0.1–0.5]",
-        min_value=0.1,
-        max_value=0.5,
+    area3 = st.number_input(
+        "area3 (Worst Area) [100–2500]", min_value=100.0, max_value=2500.0, step=1.0
+    )
+    texture3 = st.number_input(
+        "texture3 (Worst Texture) [10.0–50.0]", min_value=10.0, max_value=50.0, step=0.1
+    )
+    concavity3 = st.number_input(
+        "concavity3 (Worst Concavity) [0.01–0.60]",
+        min_value=0.01,
+        max_value=0.60,
         step=0.01,
     )
-    fractal_dim = st.number_input(
-        "Fractal Dimension (Boundary Complexity) [0.04–0.15]",
-        min_value=0.04,
+    concave_points2 = st.number_input(
+        "concave_points2 (SE Concave Points) [0.001–0.15]",
+        min_value=0.001,
         max_value=0.15,
-        step=0.01,
+        step=0.001,
     )
-    radius_se = st.number_input(
-        "Radius SE (Radius Error) [0.1–3.0]", min_value=0.1, max_value=3.0, step=0.1
+    radius2 = st.number_input(
+        "radius2 (SE Radius) [0.1–3.5]", min_value=0.1, max_value=3.5, step=0.1
+    )
+    area1 = st.number_input(
+        "area1 (Mean Area) [100–2000]", min_value=100.0, max_value=2000.0, step=1.0
     )
 
     if st.button("Predict"):
         features = to_float(
             [
-                radius,
-                texture,
-                perimeter,
-                area,
-                compactness,
-                concavity,
-                concave_points,
-                symmetry,
-                fractal_dim,
-                radius_se,
+                radius3,
+                perimeter3,
+                concave_points3,
+                concave_points1,
+                area3,
+                texture3,
+                concavity3,
+                concave_points2,
+                radius2,
+                area1,
             ]
         )
         prediction = cancer_model.predict([features])[0]
         st.success(
-            "Malignant (Breast Cancer)" if prediction == "M" else "Benign (No Cancer)"
+            "Malignant (Breast Cancer)" if prediction == 1 else "Benign (No Cancer)"
         )
 
 # --- Disclaimer ---
