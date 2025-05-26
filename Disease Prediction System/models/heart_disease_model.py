@@ -93,6 +93,19 @@ from imblearn.over_sampling import SMOTE
 smote = SMOTE(random_state=42)
 X, y = smote.fit_resample(X, y)
 
+# XGBoost-based feature selection (Top 10)
+from xgboost import XGBClassifier
+xgb = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)
+xgb.fit(X, y)
+
+import pandas as pd
+feature_importances = pd.Series(xgb.feature_importances_, index=X.columns)
+top_10_features = feature_importances.sort_values(ascending=False).head(10).index.tolist()
+print("Top 10 Selected Features by XGBoost:", top_10_features)
+
+# Keep only top 10 features
+X = X[top_10_features]
+
 """4. Split Data and Suppress Warnings"""
 
 from sklearn.model_selection import train_test_split
